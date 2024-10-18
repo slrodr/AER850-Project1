@@ -22,7 +22,7 @@ Visualizig the Data
 df.hist()
 #Creating a 3D plot to visualize data
 fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
+ax = fig.add_subplot ( projection='3d')
 
 # Extract X, Y, Z values and Step values
 X = df['X']
@@ -40,7 +40,12 @@ for steps in range(1, 14):
 
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
-ax.set_zlabel('Z')
+ax.set_zlabel('Z', )
 ax.set_title('3D Scatter Plot of Coordinates with Steps')
-ax.legend(title='Step', bbox_to_anchor=(1.05, 1), loc='upper left')
+ax.legend(title='Step', bbox_to_anchor=(1.05, 1))
 plt.show()
+# Note: This might qualify as data snooping bias as the data has not been
+#split between train and test yet, however, the project steps ask for data
+# visualization before data is prepared for the model and it is helpful
+# to at least know what the data in question represents.
+
