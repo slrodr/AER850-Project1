@@ -41,7 +41,6 @@ for steps in range(1, 14):
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('Z', )
-ax.set_title('3D Scatter Plot of Coordinates with Steps')
 ax.legend(title='Step', bbox_to_anchor=(1.05, 1))
 plt.show()
 # Note: This might qualify as data snooping bias as the data has not been
