@@ -15,6 +15,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import mean_absolute_error, accuracy_score, f1_score, precision_score
 from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 
 """
 Read data and convert to dataframe
@@ -146,3 +147,19 @@ print(f"SVC - F1 (Train): {f1_train_svc}, F1 (Test): {f1_test_svc}")
 prec_train_svc = precision_score(y_train, y_train_pred_svc, average='macro')
 prec_test_svc = precision_score(y_test, y_test_pred_svc, average='macro')
 print(f"SVC - Precision (Train): {prec_train_svc}, Precision (Test): {prec_test_svc}")
+
+'''Decision Tree'''
+dt = DecisionTreeClassifier()
+param_grid_dt = {
+    'criterion': ['gini', 'entropy', 'log_loss'],  
+    'splitter': ['best', 'random'],
+    'max_depth': [None, 10, 20, 30, 40, 50, 55, 60, 65],  
+    'min_samples_split': [2, 5, 10, 15], 
+    'min_samples_leaf': [0.5, 1, 2, 4, 6, 8, 10],   
+    'max_features': [None, 'sqrt', 'log2']  
+}
+grid_search_dt = GridSearchCV(dt, param_grid_dt, cv=5, scoring='accuracy', n_jobs=-1)
+grid_search_dt.fit(X_train, y_train)
+best_model_dt = grid_search_dt.best_estimator_
+print("Best Decision Tree Model: ", best_model_dt)
+print('Best parameters: ', grid_search_dt.best_params_)
