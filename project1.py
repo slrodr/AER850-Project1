@@ -14,6 +14,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report
+from sklearn.metrics import mean_absolute_error, accuracy_score
 
 """
 Read data and convert to dataframe
@@ -84,13 +85,28 @@ scaler1 = StandardScaler()
 X_train_scaled = pd.DataFrame(scaler1.fit_transform(X_train), columns=X_train.columns, index=X_train.index)
 X_test_scaled = pd.DataFrame(scaler1.transform(X_test), columns=X_test.columns, index=X_test.index)
 
-'''Train and Test KNN'''
+'''KNN'''
+#Creating model with best parameters
 knn = KNeighborsClassifier()
 
 param_grid_knn = {
-    'n_neighbors': [3, 5, 7, 9, 11, 15, 20],           
+    'n_neighbors': [5, 10, 15, 20, 25, 30],           
     'weights': ['uniform', 'distance'],
     'algorithm': ['ball_tree','kd_tree','brute'],         
-    'metric': ['euclidean', 'manhattan', 'minkowski', 'cityblock', 'cosine', 'haversine']  
+    'metric': ['euclidean', 'manhattan', 'minkowski', 'cityblock']  
     }
+grid_search_knn = GridSearchCV(knn, param_grid_knn, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
+grid_search_knn.fit(X_train_scaled, y_train)
+best_model_knn = grid_search_knn.best_estimator_
+print("Best KNN Model: ", best_model_knn)
+print('Best parameters: ', grid_search_knn.best_params_)
 
+#Train and test
+y_train_pred_knn = best_model_knn.predict(X_train_scaled)
+y_test_pred_knn = best_model_knn.predict(X_test_scaled)
+mae_train_knn = mean_absolute_error(y_train, y_train_pred_knn)
+mae_test_knn = mean_absolute_error(y_test, y_test_pred_knn)
+print(f"KNN - MAE (Train): {mae_train_knn}, MAE (Test): {mae_test_knn}")
+acc_train_knn = accuracy_score(y_train, y_train_pred_knn)
+acc_test_knn = accuracy_score(y_test, y_test_pred_knn)
+print(f"KNN - Acc (Train): {acc_train_knn}, Acc (Test): {acc_test_knn}")
