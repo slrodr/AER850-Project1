@@ -120,7 +120,7 @@ print(f"KNN - Precision (Train): {prec_train_knn}, Precision (Test): {prec_test_
 
 '''SVM'''
 #Create Model with best parameters
-svc = SVC()
+svc = SVC(random_state=42)
 param_grid_svc = {
     'C': [0.001, 0.1, 1, 10, 100],
     'gamma': ['scale', 'auto', 0.001, 0.1, 1, 10],
@@ -149,7 +149,7 @@ prec_test_svc = precision_score(y_test, y_test_pred_svc, average='macro')
 print(f"SVC - Precision (Train): {prec_train_svc}, Precision (Test): {prec_test_svc}")
 
 '''Decision Tree'''
-dt = DecisionTreeClassifier()
+dt = DecisionTreeClassifier(random_state=42)
 param_grid_dt = {
     'criterion': ['gini', 'entropy', 'log_loss'],  
     'splitter': ['best', 'random'],
@@ -163,3 +163,19 @@ grid_search_dt.fit(X_train, y_train)
 best_model_dt = grid_search_dt.best_estimator_
 print("Best Decision Tree Model: ", best_model_dt)
 print('Best parameters: ', grid_search_dt.best_params_)
+
+#Train and Test
+y_train_pred_dt = best_model_dt.predict(X_train_scaled)
+y_test_pred_dt = best_model_dt.predict(X_test_scaled)
+mae_train_dt = mean_absolute_error(y_train, y_train_pred_dt)
+mae_test_dt = mean_absolute_error(y_test, y_test_pred_dt)
+print(f"Decision Tree - MAE (Train): {mae_train_dt}, MAE (Test): {mae_test_dt}")
+acc_train_dt = accuracy_score(y_train, y_train_pred_dt)
+acc_test_dt = accuracy_score(y_test, y_test_pred_dt)
+print(f"Decision Tree - Acc (Train): {acc_train_dt}, Acc (Test): {acc_test_dt}")
+f1_train_dt = f1_score(y_train, y_train_pred_dt, average='macro')
+f1_test_dt = f1_score(y_test, y_test_pred_dt, average='macro')
+print(f"Decision Tree - F1 (Train): {f1_train_dt}, F1 (Test): {f1_test_dt}")
+prec_train_dt = precision_score(y_train, y_train_pred_dt, average='macro', zero_division=1)
+prec_test_dt = precision_score(y_test, y_test_pred_dt, average='macro', zero_division=1)
+print(f"SVC - Precision (Train): {prec_train_dt}, Precision (Test): {prec_test_dt}")
