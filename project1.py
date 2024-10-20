@@ -13,8 +13,8 @@ from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import classification_report
-from sklearn.metrics import mean_absolute_error, accuracy_score
+from sklearn.metrics import mean_absolute_error, accuracy_score, f1_score, precision_score
+from sklearn.svm import SVC
 
 """
 Read data and convert to dataframe
@@ -95,7 +95,7 @@ param_grid_knn = {
     'algorithm': ['ball_tree','kd_tree','brute'],         
     'metric': ['euclidean', 'manhattan', 'minkowski', 'cityblock']  
     }
-grid_search_knn = GridSearchCV(knn, param_grid_knn, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
+grid_search_knn = GridSearchCV(knn, param_grid_knn, cv=5, scoring='accuracy', n_jobs=-1)
 grid_search_knn.fit(X_train_scaled, y_train)
 best_model_knn = grid_search_knn.best_estimator_
 print("Best KNN Model: ", best_model_knn)
@@ -110,3 +110,22 @@ print(f"KNN - MAE (Train): {mae_train_knn}, MAE (Test): {mae_test_knn}")
 acc_train_knn = accuracy_score(y_train, y_train_pred_knn)
 acc_test_knn = accuracy_score(y_test, y_test_pred_knn)
 print(f"KNN - Acc (Train): {acc_train_knn}, Acc (Test): {acc_test_knn}")
+f1_train_knn = f1_score(y_train, y_train_pred_knn, average='macro')
+f1_test_knn = f1_score(y_test, y_test_pred_knn, average='macro')
+print(f"KNN - F1 (Train): {f1_train_knn}, F1 (Test): {f1_test_knn}")
+prec_train_knn = precision_score(y_train, y_train_pred_knn, average='macro')
+prec_test_knn = precision_score(y_test, y_test_pred_knn, average='macro')
+print(f"KNN - Precision (Train): {prec_train_knn}, Precision (Test): {prec_test_knn}")
+
+'''SVM'''
+svc = SVC()
+param_grid_svc = {
+    'C': [0.001, 0.1, 1, 10, 100],
+    'gamma': ['scale', 'auto', 0.001, 0.1, 1, 10],
+    'kernel': ['linear', 'poly', 'rbf', 'sigmoid']
+}
+grid_search_svc = GridSearchCV(svc, param_grid_svc, cv=5, scoring='accuracy', n_jobs=-1)
+grid_search_svc.fit(X_train_scaled, y_train)
+best_model_svc= grid_search_svc.best_estimator_
+print("Best SVC Model: ", best_model_svc)
+print('Best parameters: ', grid_search_svc.best_params_)
