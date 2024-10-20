@@ -118,6 +118,7 @@ prec_test_knn = precision_score(y_test, y_test_pred_knn, average='macro')
 print(f"KNN - Precision (Train): {prec_train_knn}, Precision (Test): {prec_test_knn}")
 
 '''SVM'''
+#Create Model with best parameters
 svc = SVC()
 param_grid_svc = {
     'C': [0.001, 0.1, 1, 10, 100],
@@ -129,3 +130,19 @@ grid_search_svc.fit(X_train_scaled, y_train)
 best_model_svc= grid_search_svc.best_estimator_
 print("Best SVC Model: ", best_model_svc)
 print('Best parameters: ', grid_search_svc.best_params_)
+
+#Train and Test
+y_train_pred_svc = best_model_svc.predict(X_train_scaled)
+y_test_pred_svc = best_model_svc.predict(X_test_scaled)
+mae_train_svc = mean_absolute_error(y_train, y_train_pred_svc)
+mae_test_svc = mean_absolute_error(y_test, y_test_pred_svc)
+print(f"SVC - MAE (Train): {mae_train_svc}, MAE (Test): {mae_test_svc}")
+acc_train_svc = accuracy_score(y_train, y_train_pred_svc)
+acc_test_svc = accuracy_score(y_test, y_test_pred_svc)
+print(f"SVC - Acc (Train): {acc_train_svc}, Acc (Test): {acc_test_svc}")
+f1_train_svc = f1_score(y_train, y_train_pred_svc, average='macro')
+f1_test_svc = f1_score(y_test, y_test_pred_svc, average='macro')
+print(f"SVC - F1 (Train): {f1_train_svc}, F1 (Test): {f1_test_svc}")
+prec_train_svc = precision_score(y_train, y_train_pred_svc, average='macro')
+prec_test_svc = precision_score(y_test, y_test_pred_svc, average='macro')
+print(f"SVC - Precision (Train): {prec_train_svc}, Precision (Test): {prec_test_svc}")
