@@ -11,6 +11,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import GridSearchCV
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report
 
 """
 Read data and convert to dataframe
@@ -81,5 +84,13 @@ scaler1 = StandardScaler()
 X_train_scaled = pd.DataFrame(scaler1.fit_transform(X_train), columns=X_train.columns, index=X_train.index)
 X_test_scaled = pd.DataFrame(scaler1.transform(X_test), columns=X_test.columns, index=X_test.index)
 
+'''Train and Test KNN'''
+knn = KNeighborsClassifier()
 
+param_grid_knn = {
+    'n_neighbors': [3, 5, 7, 9, 11, 15, 20],           
+    'weights': ['uniform', 'distance'],
+    'algorithm': ['ball_tree','kd_tree','brute'],         
+    'metric': ['euclidean', 'manhattan', 'minkowski', 'cityblock', 'cosine', 'haversine']  
+    }
 
