@@ -11,12 +11,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import GridSearchCV
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.neighbors import KNeighborsClassifier, RadiusNeighborsClassifier
 from sklearn.metrics import mean_absolute_error, accuracy_score, f1_score, precision_score
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 """
 Read data and convert to dataframe
 """
@@ -148,34 +149,113 @@ prec_train_svc = precision_score(y_train, y_train_pred_svc, average='macro')
 prec_test_svc = precision_score(y_test, y_test_pred_svc, average='macro')
 print(f"SVC - Precision (Train): {prec_train_svc}, Precision (Test): {prec_test_svc}")
 
-'''Decision Tree'''
-dt = DecisionTreeClassifier(random_state=42)
-param_grid_dt = {
-    'criterion': ['gini', 'entropy', 'log_loss'],  
-    'splitter': ['best', 'random'],
-    'max_depth': [None, 10, 20, 30, 40, 50, 55, 60, 65],  
-    'min_samples_split': [2, 5, 10, 15], 
-    'min_samples_leaf': [0.5, 1, 2, 4, 6, 8, 10],   
-    'max_features': [None, 'sqrt', 'log2']  
-}
-grid_search_dt = GridSearchCV(dt, param_grid_dt, cv=5, scoring='accuracy', n_jobs=-1)
-grid_search_dt.fit(X_train, y_train)
-best_model_dt = grid_search_dt.best_estimator_
-print("Best Decision Tree Model: ", best_model_dt)
-print('Best parameters: ', grid_search_dt.best_params_)
+#'''Decision Tree'''
+#dt = DecisionTreeClassifier(random_state=42)
+#param_grid_dt = {
+    #'criterion': ['gini', 'entropy', 'log_loss'],  
+   # 'splitter': ['best', 'random'],
+    #'max_depth': [None, 10, 20, 30, 40, 50, 55, 60, 65],  
+    #'min_samples_split': [2, 5, 10, 15], 
+    #'min_samples_leaf': [0.5, 1, 2, 4, 6, 8, 10],   
+    #'max_features': [None, 'sqrt', 'log2']  
+#}
+#grid_search_dt = GridSearchCV(dt, param_grid_dt, cv=5, scoring='accuracy', n_jobs=-1)
+#grid_search_dt.fit(X_train, y_train)
+#best_model_dt = grid_search_dt.best_estimator_
+#print("Best Decision Tree Model: ", best_model_dt)
+#print('Best parameters: ', grid_search_dt.best_params_)
 
 #Train and Test
-y_train_pred_dt = best_model_dt.predict(X_train_scaled)
-y_test_pred_dt = best_model_dt.predict(X_test_scaled)
-mae_train_dt = mean_absolute_error(y_train, y_train_pred_dt)
-mae_test_dt = mean_absolute_error(y_test, y_test_pred_dt)
-print(f"Decision Tree - MAE (Train): {mae_train_dt}, MAE (Test): {mae_test_dt}")
-acc_train_dt = accuracy_score(y_train, y_train_pred_dt)
-acc_test_dt = accuracy_score(y_test, y_test_pred_dt)
-print(f"Decision Tree - Acc (Train): {acc_train_dt}, Acc (Test): {acc_test_dt}")
-f1_train_dt = f1_score(y_train, y_train_pred_dt, average='macro')
-f1_test_dt = f1_score(y_test, y_test_pred_dt, average='macro')
-print(f"Decision Tree - F1 (Train): {f1_train_dt}, F1 (Test): {f1_test_dt}")
-prec_train_dt = precision_score(y_train, y_train_pred_dt, average='macro', zero_division=1)
-prec_test_dt = precision_score(y_test, y_test_pred_dt, average='macro', zero_division=1)
-print(f"SVC - Precision (Train): {prec_train_dt}, Precision (Test): {prec_test_dt}")
+#y_train_pred_dt = best_model_dt.predict(X_train_scaled)
+#y_test_pred_dt = best_model_dt.predict(X_test_scaled)
+#mae_train_dt = mean_absolute_error(y_train, y_train_pred_dt)
+#mae_test_dt = mean_absolute_error(y_test, y_test_pred_dt)
+#print(f"Decision Tree - MAE (Train): {mae_train_dt}, MAE (Test): {mae_test_dt}")
+#acc_train_dt = accuracy_score(y_train, y_train_pred_dt)
+#acc_test_dt = accuracy_score(y_test, y_test_pred_dt)
+#print(f"Decision Tree - Acc (Train): {acc_train_dt}, Acc (Test): {acc_test_dt}")
+#f1_train_dt = f1_score(y_train, y_train_pred_dt, average='macro')
+#f1_test_dt = f1_score(y_test, y_test_pred_dt, average='macro')
+#print(f"Decision Tree - F1 (Train): {f1_train_dt}, F1 (Test): {f1_test_dt}")
+#prec_train_dt = precision_score(y_train, y_train_pred_dt, average='macro', zero_division=1)
+#prec_test_dt = precision_score(y_test, y_test_pred_dt, average='macro', zero_division=1)
+#print(f"SVC - Precision (Train): {prec_train_dt}, Precision (Test): {prec_test_dt}")
+
+
+'''Random Forest Classifier'''
+rf = RandomForestClassifier(random_state=42)
+
+param_grid_rf = {
+    'n_estimators': [10, 25, 50, 75, 100, 150,  200, 300],  
+    'max_depth': [10, 20, 30, None],  
+    'min_samples_split': [2, 5, 10],  
+    'min_samples_leaf': [1, 2, 4, 5, 6, 10],    
+    'max_features': ['sqrt', 'log2', None],  
+    'bootstrap': [True, False]  
+}
+
+grid_search_rf = GridSearchCV(rf, param_grid_rf, cv=5, scoring='accuracy', n_jobs=-1)
+grid_search_rf.fit(X_train_scaled, y_train)
+best_model_rf= grid_search_rf.best_estimator_
+print("Best Random Forest Model: ", best_model_rf)
+print('Best parameters: ', grid_search_rf.best_params_)
+
+#Train and Test
+y_train_pred_rf = best_model_rf.predict(X_train_scaled)
+y_test_pred_rf = best_model_rf.predict(X_test_scaled)
+mae_train_rf = mean_absolute_error(y_train, y_train_pred_rf)
+mae_test_rf = mean_absolute_error(y_test, y_test_pred_rf)
+print(f"RF - MAE (Train): {mae_train_rf}, MAE (Test): {mae_test_rf}")
+acc_train_rf = accuracy_score(y_train, y_train_pred_rf)
+acc_test_rf = accuracy_score(y_test, y_test_pred_rf)
+print(f"RF - Acc (Train): {acc_train_rf}, Acc (Test): {acc_test_rf}")
+f1_train_rf = f1_score(y_train, y_train_pred_rf, average='macro')
+f1_test_rf = f1_score(y_test, y_test_pred_rf, average='macro')
+print(f"RF - F1 (Train): {f1_train_rf}, F1 (Test): {f1_test_rf}")
+prec_train_rf = precision_score(y_train, y_train_pred_rf, average='macro')
+prec_test_rf = precision_score(y_test, y_test_pred_rf, average='macro')
+print(f"RF - Precision (Train): {prec_train_rf}, Precision (Test): {prec_test_rf}")
+
+'''Radius Neighbors Classifier with RadomizedCV search'''
+rnc = RadiusNeighborsClassifier()
+
+param_dist = {
+    'radius': np.arange(1.0, 10.0, 0.5),
+    'weights': ['uniform', 'distance'],  
+    'algorithm': ['ball_tree', 'kd_tree', 'brute'],  
+    'leaf_size': np.arange(10, 50, 5), 
+    'metric': ['euclidean', 'manhattan', 'minkowski', 'cityblock'],
+    'outlier_label': [None, 'most_frequent']  
+}
+
+random_search_rnc = RandomizedSearchCV(estimator=rnc, param_distributions=param_dist, n_iter=20, cv=5, scoring='accuracy', n_jobs=-1, verbose=2, random_state=42)
+random_search_rnc.fit(X_train_scaled, y_train)
+best_model_random_rnc = random_search_rnc.best_estimator_
+print("Best Radius Neighbors: ", best_model_random_rnc)
+print('Best parameters: ', random_search_rnc.best_params_)
+
+#Train and Test
+y_train_pred_rnc = best_model_random_rnc.predict(X_train_scaled)
+y_test_pred_rnc = best_model_random_rnc.predict(X_test_scaled)
+mae_train_rnc = mean_absolute_error(y_train, y_train_pred_rnc)
+mae_test_rnc = mean_absolute_error(y_test, y_test_pred_rnc)
+print(f"RNC - MAE (Train): {mae_train_rnc}, MAE (Test): {mae_test_rnc}")
+acc_train_rnc = accuracy_score(y_train, y_train_pred_rnc)
+acc_test_rnc = accuracy_score(y_test, y_test_pred_rnc)
+print(f"RNC - Acc (Train): {acc_train_rnc}, Acc (Test): {acc_test_rnc}")
+f1_train_rnc = f1_score(y_train, y_train_pred_rnc, average='macro')
+f1_test_rnc = f1_score(y_test, y_test_pred_rnc, average='macro')
+print(f"RNC - F1 (Train): {f1_train_rnc}, F1 (Test): {f1_test_rnc}")
+prec_train_rnc = precision_score(y_train, y_train_pred_rnc, average='macro')
+prec_test_rnc = precision_score(y_test, y_test_pred_rnc, average='macro')
+print(f"RNC - Precision (Train): {prec_train_rnc}, Precision (Test): {prec_test_rnc}")
+
+
+'''Confusion Matrix'''
+cm = confusion_matrix(y_test, y_test_pred_svc)
+plt.figure()
+ConfusionMatrixDisplay(cm).plot
+plt.show()
+
+
+'''Stacked Model'''
