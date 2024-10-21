@@ -257,7 +257,7 @@ print(f"RNC - Precision (Train): {prec_train_rnc}, Precision (Test): {prec_test_
 '''Confusion Matrix'''
 cm = confusion_matrix(y_test, y_test_pred_svc)
 plt.figure()
-ConfusionMatrixDisplay(cm).plot()
+ConfusionMatrixDisplay(cm, display_labels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]).plot()
 plt.show()
 
 
@@ -279,7 +279,7 @@ print(f"Stacked - Precision (Train): {prec_train_stack}, Precision (Test): {prec
 
 cm2 = confusion_matrix(y_test, y_test_stacked)
 plt.figure()
-ConfusionMatrixDisplay(cm2).plot()
+ConfusionMatrixDisplay(cm2, display_labels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]).plot()
 plt.show()
 
 '''Package it in Joblib format'''
