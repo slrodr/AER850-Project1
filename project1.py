@@ -16,8 +16,10 @@ from sklearn.neighbors import KNeighborsClassifier, RadiusNeighborsClassifier
 from sklearn.metrics import mean_absolute_error, accuracy_score, f1_score, precision_score
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, StackingClassifier
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import joblib
+
 """
 Read data and convert to dataframe
 """
@@ -125,7 +127,8 @@ svc = SVC(random_state=42)
 param_grid_svc = {
     'C': [0.001, 0.1, 1, 10, 100],
     'gamma': ['scale', 'auto', 0.001, 0.1, 1, 10],
-    'kernel': ['linear', 'poly', 'rbf', 'sigmoid']
+    'kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
+    'probability': [True]
 }
 grid_search_svc = GridSearchCV(svc, param_grid_svc, cv=5, scoring='accuracy', n_jobs=-1)
 grid_search_svc.fit(X_train_scaled, y_train)
@@ -254,8 +257,30 @@ print(f"RNC - Precision (Train): {prec_train_rnc}, Precision (Test): {prec_test_
 '''Confusion Matrix'''
 cm = confusion_matrix(y_test, y_test_pred_svc)
 plt.figure()
-ConfusionMatrixDisplay(cm).plot
+ConfusionMatrixDisplay(cm).plot()
 plt.show()
 
 
 '''Stacked Model'''
+stacked = StackingClassifier(estimators=[('knn', knn), ('rnc', rnc)], cv=5, n_jobs=-1)
+stacked.fit(X_train_scaled, y_train)
+
+y_train_stacked = stacked.predict(X_train_scaled)
+y_test_stacked = stacked.predict(X_test_scaled)
+acc_train_stack = accuracy_score(y_train, y_train_stacked)
+acc_test_stack = accuracy_score(y_train, y_train_stacked)
+print(f"Stacked - Acc (Train): {acc_train_stack}, Acc (Test): {acc_test_stack}")
+f1_train_stack = f1_score(y_train, y_train_stacked, average='macro')
+f1_test_stack = f1_score(y_test, y_test_stacked, average='macro')
+print(f"Stacked- F1 (Train): {f1_train_stack}, F1 (Test): {f1_test_stack}")
+prec_train_stack = precision_score(y_train, y_train_stacked, average='macro')
+prec_test_stack = precision_score(y_test, y_test_stacked, average='macro')
+print(f"Stacked - Precision (Train): {prec_train_stack}, Precision (Test): {prec_test_stack}")
+
+cm2 = confusion_matrix(y_test, y_test_stacked)
+plt.figure()
+ConfusionMatrixDisplay(cm2).plot()
+plt.show()
+
+'''Package it in Joblib format'''
+joblib.dump(best_model_svc, 'svc.joblib')
